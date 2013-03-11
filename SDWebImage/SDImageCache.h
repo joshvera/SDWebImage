@@ -86,14 +86,28 @@ typedef enum SDImageCacheType SDImageCacheType;
 - (void)storeImage:(UIImage *)image imageData:(NSData *)data forKey:(NSString *)key toDisk:(BOOL)toDisk;
 
 /**
- * Query the disk cache asynchronously.
+ * Query the memory cache synchronously.
  *
  * @param key The unique key used to store the wanted image
+ * @param doneBlock The block to execute when the query finishes. Note that
+ * `image` may be nil. Dispatched on the main thread.
  */
 - (void)queryDiskCacheForKey:(NSString *)key done:(void (^)(UIImage *image, SDImageCacheType cacheType))doneBlock;
 
 /**
- * Query the memory cache synchronously.
+ * Query the disk cache asynchronousely.
+ *
+ * @param key The unique key used to store the wanted image
+ * @param queue The queue to dispatch
+ * @param doneBlock The block to execute when the query finishes. Note that
+ * `image` may be nil. Dispatched on `queue`, or a background queue if `queue`
+ * is nil.
+ */
+- (void)queryDiskCacheForKey:(NSString *)key queue:(dispatch_queue_t)queue
+  done:(void (^)(UIImage *image, SDImageCacheType cacheType))doneBlock;
+
+/**
+ * Query the memory cache.
  *
  * @param key The unique key used to store the wanted image
  */
