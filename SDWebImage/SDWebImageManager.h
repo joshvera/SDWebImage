@@ -105,6 +105,9 @@ typedef void(^SDWebImageCompletedWithFinishedBlock)(UIImage *image, NSError *err
 @property (strong, nonatomic, readonly) SDImageCache *imageCache;
 @property (strong, nonatomic, readonly) SDWebImageDownloader *imageDownloader;
 
+// The queue to Default value is YES.
+@property (assign, getter = isDispatchedOnMainThread) BOOL dispatchedOnMainThread;
+
 /**
  * The cache filter is a block used each time SDWebImageManager need to convert an URL into a cache key. This can
  * be used to remove dynamic part of an image URL.

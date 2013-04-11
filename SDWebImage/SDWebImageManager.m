@@ -44,6 +44,7 @@
         _imageDownloader = SDWebImageDownloader.new;
         _failedURLs = NSMutableArray.new;
         _runningOperations = NSMutableArray.new;
+        _dispatchedOnMainThread = YES;
     }
     return self;
 }
@@ -65,8 +66,7 @@
     }
 }
 
-- (id<SDWebImageOperation>)downloadWithURL:(NSURL *)url options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletedWithFinishedBlock)completedBlock
-{    
+- (id<SDWebImageOperation>)downloadWithURL:(NSURL *)url queue:(dispatch_queue_t)queue options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletedWithFinishedBlock)completedBlock {
     // Very common mistake is to send the URL using NSString object instead of NSURL. For some strange reason, XCode won't
     // throw any warning for this type mismatch. Here we failsafe this error by allowing URLs to be passed as NSString.
     if ([url isKindOfClass:NSString.class])
@@ -101,7 +101,7 @@
     }
     NSString *key = [self cacheKeyForURL:url];
 
-    [self.imageCache queryDiskCacheForKey:key done:^(UIImage *image, SDImageCacheType cacheType)
+    [self.imageCache queryDiskCacheForKey:key queue:queue done:^(UIImage *image, SDImageCacheType cacheType)
     {
         if (operation.isCancelled) return;
 
@@ -159,7 +159,7 @@
                             BOOL isImageGIF = [data sd_isGIF];
                             UIImage *transformedImage = isImageGIF ? downloadedImage : [self.delegate imageManager:self transformDownloadedImage:downloadedImage withURL:url];
 
-                            dispatch_async(dispatch_get_main_queue(), ^
+                            dispatch_async(queue, ^
                             {
                                 completedBlock(transformedImage, nil, SDImageCacheTypeNone, finished);
                             });
@@ -212,6 +212,13 @@
     }];
 
     return operation;
+
+}
+
+- (id<SDWebImageOperation>)downloadWithURL:(NSURL *)url options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletedWithFinishedBlock)completedBlock
+{    
+    dispatch_queue_t queue = (self.dispatchedOnMainThread ? dispatch_get_main_queue() : nil);
+    return [self downloadWithURL:url queue:queue options:options progress:progressBlock completed:completedBlock];
 }
 
 - (void)cancelAll
