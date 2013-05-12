@@ -87,7 +87,6 @@ typedef void(^SDWebImageCompletedWithFinishedBlock)(UIImage *image, NSError *err
  *
  *  SDWebImageManager *manager = [SDWebImageManager sharedManager];
  *  [manager downloadWithURL:imageURL
- *                  delegate:self
  *                   options:0
  *                  progress:nil
  *                 completed:^(UIImage *image, NSError *error, BOOL fromCache)
@@ -156,6 +155,8 @@ typedef void(^SDWebImageCompletedWithFinishedBlock)(UIImage *image, NSError *err
                                    options:(SDWebImageOptions)options
                                   progress:(SDWebImageDownloaderProgressBlock)progressBlock
                                  completed:(SDWebImageCompletedWithFinishedBlock)completedBlock;
+
+- (id<SDWebImageOperation>)downloadWithURL:(NSURL *)url queue:(dispatch_queue_t)queue options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletedWithFinishedBlock)completedBlock;
 
 /**
  * Cancel all current opreations
