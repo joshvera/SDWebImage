@@ -238,13 +238,14 @@ static const NSInteger kDefaultCacheMaxCacheAge = 60 * 60 * 24 * 7; // 1 week
                 [self.memCache setObject:diskImage forKey:key cost:cost];
             }
 
-        if (!queue) {
-            doneBlock(diskImage, SDImageCacheTypeDisk);
-        } else {
-            dispatch_async(queue, ^
-            {
+            if (!queue) {
                 doneBlock(diskImage, SDImageCacheTypeDisk);
-            });
+            } else {
+                dispatch_async(queue, ^
+                {
+                    doneBlock(diskImage, SDImageCacheTypeDisk);
+                });
+            }
         }
     });
 }

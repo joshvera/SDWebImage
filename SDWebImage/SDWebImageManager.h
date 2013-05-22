@@ -131,9 +131,18 @@ typedef void(^SDWebImageCompletedWithFinishedBlock)(UIImage *image, NSError *err
 + (SDWebImageManager *)sharedManager;
 
 /**
+ * Calls -downloadWithURL:queue:options:progress:completed: on the main queue
+ */
+- (id<SDWebImageOperation>)downloadWithURL:(NSURL *)url
+                                   options:(SDWebImageOptions)options
+                                  progress:(SDWebImageDownloaderProgressBlock)progressBlock
+                                 completed:(SDWebImageCompletedWithFinishedBlock)completedBlock;
+
+/**
  * Downloads the image at the given URL if not present in cache or return the cached version otherwise.
  *
  * @param url The URL to the image
+ * @param queue The queue to dispatch `completedBlock` on
  * @param delegate The delegate object used to send result back
  * @param options A mask to specify options to use for this request
  * @param progressBlock A block called while image is downloading
@@ -152,10 +161,8 @@ typedef void(^SDWebImageCompletedWithFinishedBlock)(UIImage *image, NSError *err
  *
  * @return Returns a cancellable NSOperation
  */
-- (id<SDWebImageOperation>)downloadWithURL:(NSURL *)url
-                                   options:(SDWebImageOptions)options
-                                  progress:(SDWebImageDownloaderProgressBlock)progressBlock
-                                 completed:(SDWebImageCompletedWithFinishedBlock)completedBlock;
+- (id<SDWebImageOperation>)downloadWithURL:(NSURL *)url queue:(dispatch_queue_t)queue options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletedWithFinishedBlock)completedBlock;
+
 
 /**
  * Cancel all current opreations
